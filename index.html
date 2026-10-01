@@ -1,0 +1,881 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>$BEANOS | Subject has escaped</title>
+<meta name="description" content="The trenches asked for a savior. They got a bean. $BEANOS.">
+<meta name="theme-color" content="#06050a">
+<link rel="icon" type="image/png" href="assets/icon-32.png">
+<link rel="apple-touch-icon" href="assets/icon-180.png">
+<meta property="og:title" content="$BEANOS">
+<meta property="og:description" content="The trenches asked for a savior. They got a bean.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wdth,wght@12..96,75..100,200..800&family=Martian+Mono:wdth,wght@75..112.5,300..700&display=swap">
+<style>
+:root{
+  --void:#06050a;
+  --steel:#14131a;
+  --bean:#a43cff;
+  --bean-2:#d59bff;
+  --alarm:#ff2d3d;
+  --hazard:#f2c230;
+  --phos:#7dffb0;
+  --paper:#f1edf7;
+  --paper-2:rgba(241,237,247,.78);
+  --paper-3:rgba(241,237,247,.5);
+  --line:rgba(241,237,247,.16);
+  --pad:clamp(18px,4.5vw,72px);
+  --display:"Bricolage Grotesque","Arial Black",system-ui,sans-serif;
+  --mono:"Martian Mono",ui-monospace,Menlo,Consolas,monospace;
+  --ease:cubic-bezier(.2,.7,.1,1);
+  --glow:0 0 8px rgba(213,155,255,.9),0 0 28px rgba(164,60,255,.6),0 0 80px rgba(164,60,255,.4);
+  --glow-red:0 0 10px rgba(255,45,61,.8),0 0 30px rgba(255,45,61,.4);
+  color-scheme:dark;
+  box-sizing:border-box;
+  padding-top:env(safe-area-inset-top,0px);
+  padding-bottom:env(safe-area-inset-bottom,0px);
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--void:#06050a;--paper:#f1edf7}}
+:root[data-theme="dark"]{--void:#06050a;--paper:#f1edf7}
+*,*::before,*::after{box-sizing:border-box}
+html{height:100%;scroll-padding-top:env(safe-area-inset-top,0px);-webkit-text-size-adjust:100%}
+html,body{margin:0;overflow:hidden}
+body{height:100%;background:var(--void);color:var(--paper);font-family:var(--display);font-size:17px;line-height:1.5;-webkit-font-smoothing:antialiased}
+img{display:block;max-width:100%}
+a{color:inherit}
+button{font:inherit;color:inherit}
+:focus-visible{outline:2px solid var(--bean-2);outline-offset:3px}
+
+/* ---------- The lab (3D) ---------- */
+#lab{position:fixed;inset:0;width:100%;height:100%;display:block;touch-action:none;filter:contrast(1.08) saturate(1.05);background:#06050a}
+.film{position:fixed;inset:0;z-index:60;pointer-events:none}
+.film__grain{position:absolute;inset:-50%;opacity:.09;mix-blend-mode:overlay;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 0 0 0 .9 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");animation:grain .9s steps(5) infinite}
+@keyframes grain{0%{transform:translate(0,0)}20%{transform:translate(-3%,2%)}40%{transform:translate(2%,-4%)}60%{transform:translate(-5%,-1%)}80%{transform:translate(4%,3%)}100%{transform:translate(0,0)}}
+.film__vig{position:absolute;inset:0;background:radial-gradient(120% 95% at 50% 50%,transparent 50%,rgba(0,0,0,.75))}
+.film__scan{position:absolute;inset:0;background:repeating-linear-gradient(180deg,rgba(0,0,0,.06) 0 1px,transparent 1px 3px)}
+.redwash{position:fixed;inset:0;z-index:58;pointer-events:none;background:radial-gradient(80% 80% at 50% 50%,transparent 40%,rgba(255,30,50,.35));opacity:0;mix-blend-mode:screen}
+
+/* terminal labels projected from 3D */
+.tags{position:fixed;inset:0;z-index:20;pointer-events:none}
+.tag{position:absolute;left:0;top:0;display:flex;flex-direction:column;align-items:flex-start;gap:2px;padding:8px 12px 9px;border:0;border-left:2px solid var(--bean);background:rgba(6,5,10,.66);-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px);text-align:left;cursor:pointer;pointer-events:auto;white-space:nowrap;transition:background .3s,box-shadow .3s,opacity .4s;will-change:transform}
+.tag:hover,.tag:focus-visible{background:rgba(164,60,255,.22);box-shadow:var(--glow)}
+.tag__id{font-family:var(--mono);font-size:10px;letter-spacing:.14em;color:var(--bean-2)}
+.tag__t{font-weight:700;font-size:14px;letter-spacing:.02em}
+.tags.hide .tag{opacity:0;pointer-events:none}
+
+/* ---------- Header ---------- */
+.bar{position:fixed;left:0;right:0;top:0;z-index:40;padding-top:env(safe-area-inset-top,0px);opacity:0}
+.bar__in{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:16px var(--pad)}
+.brand{display:flex;align-items:center;gap:12px;background:none;border:0;padding:0;cursor:pointer}
+.brand img{width:40px;height:40px;border-radius:50%;box-shadow:0 0 0 1px rgba(213,155,255,.6),0 0 20px rgba(164,60,255,.6)}
+.brand span{font-weight:800;font-size:20px;letter-spacing:-.01em;text-shadow:var(--glow)}
+.bar__acts{display:flex;gap:8px}
+.chip{display:inline-flex;align-items:center;gap:8px;height:40px;padding:0 16px;border-radius:999px;border:1px solid var(--line);background:rgba(6,5,10,.5);-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px);font-size:14px;font-weight:700;text-decoration:none;cursor:pointer;transition:border-color .3s,box-shadow .3s}
+.chip:hover{border-color:var(--bean);box-shadow:var(--glow)}
+.chip[hidden]{display:none}
+.xmark{width:15px;height:15px;flex:none}
+
+/* ---------- Hero overlay ---------- */
+.hero{position:fixed;left:var(--pad);bottom:calc(5svh + env(safe-area-inset-bottom,0px));z-index:30;width:min(600px,calc(100vw - var(--pad) * 2));pointer-events:none;transition:opacity .7s var(--ease),transform .9s var(--ease)}
+.hero.away{opacity:0;transform:translateX(-40px)}
+.hero > *{pointer-events:auto}
+.hero__k{display:flex;flex-wrap:wrap;gap:8px 16px;font-family:var(--mono);font-size:11px;letter-spacing:.12em;color:var(--paper-3)}
+.hero__k b{font-weight:500;color:var(--bean-2)}
+.title{margin:.12em 0 0 -.04em;font-weight:800;font-size:clamp(76px,11vw,176px);line-height:.86;letter-spacing:-.045em;color:#fff;text-shadow:var(--glow)}
+.title .ch{display:inline-block}
+.title .ch.d{color:var(--bean-2)}
+.hero__lede{margin:14px 0 0;max-width:30ch;font-size:clamp(20px,1.8vw,27px);line-height:1.15;font-weight:600;letter-spacing:-.01em}
+.hero__lede em{font-style:normal;color:var(--bean-2);text-shadow:var(--glow)}
+.hero__acts{margin-top:22px;display:flex;flex-wrap:wrap;gap:10px}
+.kym{display:inline-flex;align-items:center;gap:10px;margin-top:14px;font-family:var(--mono);font-size:11px;letter-spacing:.1em;color:var(--hazard);text-decoration:none;border-bottom:1px solid rgba(242,194,48,.4);padding-bottom:3px}
+.kym:hover{color:#fff;border-color:#fff}
+.kym::before{content:"";width:8px;height:8px;background:var(--hazard);box-shadow:0 0 10px var(--hazard)}
+
+/* CA: a specimen label with a barcode and a scanning laser */
+.ca{position:relative;display:flex;align-items:center;gap:12px;height:62px;padding:0 6px 0 14px;flex:1 1 320px;min-width:0;max-width:100%;border-radius:6px;overflow:hidden;
+  background:linear-gradient(180deg,#ece8f2,#cfc8da);color:#16121e;box-shadow:0 0 0 1px rgba(255,255,255,.6),0 20px 40px -18px #000}
+.ca__bar{flex:none;width:44px;height:36px;background:repeating-linear-gradient(90deg,#16121e 0 2px,transparent 2px 3px,#16121e 3px 4px,transparent 4px 7px,#16121e 7px 10px,transparent 10px 11px)}
+.ca__txt{display:flex;flex-direction:column;min-width:0;flex:1;line-height:1.2}
+.ca__tag{font-family:var(--mono);font-size:9.5px;letter-spacing:.16em;color:#6a6077}
+.ca__val{font-family:var(--mono);font-size:13px;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.ca__copy{position:relative;z-index:2;flex:none;height:48px;padding:0 18px;border:0;border-radius:4px;background:#16121e;color:#fff;font-family:var(--mono);font-size:11px;letter-spacing:.14em;cursor:pointer;transition:background .3s}
+.ca__copy:hover{background:var(--bean)}
+.ca__copy:disabled{opacity:.45;cursor:default;background:#16121e}
+.ca__laser{position:absolute;left:0;right:0;top:0;height:2px;background:var(--alarm);box-shadow:0 0 8px 2px rgba(255,45,61,.8);animation:laser 2.4s ease-in-out infinite;pointer-events:none}
+@keyframes laser{0%,100%{top:8%}50%{top:88%}}
+.ca.is-empty .ca__val{color:#6a6077}
+
+/* X: a containment button that glows when you get close */
+.xbtn{position:relative;display:inline-flex;align-items:center;justify-content:center;gap:10px;height:62px;padding:0 28px;border-radius:6px;text-decoration:none;font-weight:800;font-size:15px;letter-spacing:.04em;color:#fff;background:linear-gradient(180deg,#b453ff,#7a1fd6);box-shadow:0 0 0 1px rgba(255,255,255,.25) inset,0 -4px 0 rgba(0,0,0,.25) inset,0 0 40px rgba(164,60,255,.55);overflow:hidden;transition:transform .2s,box-shadow .3s}
+.xbtn::before{content:"";position:absolute;inset:-2px;background:repeating-linear-gradient(-45deg,var(--hazard) 0 10px,#111 10px 20px);opacity:0;transition:opacity .3s;z-index:-1}
+.xbtn::after{content:"";position:absolute;inset:4px;border-radius:3px;background:inherit;z-index:-1}
+.xbtn{isolation:isolate}
+.xbtn:hover{box-shadow:0 0 0 1px rgba(255,255,255,.4) inset,0 0 70px rgba(164,60,255,.9);transform:translateY(-2px)}
+.xbtn:hover::before{opacity:1;animation:stripes .6s linear infinite}
+@keyframes stripes{to{background-position:28px 0}}
+.xbtn:active{transform:translateY(1px)}
+
+.hint{position:fixed;right:var(--pad);bottom:calc(5svh + env(safe-area-inset-bottom,0px));z-index:30;max-width:270px;text-align:right;font-family:var(--mono);font-size:11px;letter-spacing:.08em;line-height:1.7;color:var(--paper-3);opacity:0;transition:opacity .6s}
+.hint b{display:block;margin-bottom:4px;font-family:var(--display);font-weight:700;font-size:17px;letter-spacing:0;color:var(--paper)}
+
+/* ---------- Experiment file panel ---------- */
+.file{position:fixed;top:0;right:0;bottom:0;z-index:35;width:min(580px,100vw);padding:calc(86px + env(safe-area-inset-top,0px)) clamp(22px,3vw,44px) calc(30px + env(safe-area-inset-bottom,0px));background:linear-gradient(90deg,rgba(6,5,10,0),rgba(6,5,10,.88) 10%,rgba(6,5,10,.96));overflow-y:auto;overscroll-behavior:contain;transform:translateX(105%);transition:transform .9s var(--ease)}
+.file.open{transform:none}
+.file__head{display:flex;justify-content:space-between;gap:12px;font-family:var(--mono);font-size:11px;letter-spacing:.14em;color:var(--paper-3);border-bottom:1px solid var(--line);padding-bottom:10px}
+.file__head b{color:var(--alarm);font-weight:500;text-shadow:var(--glow-red)}
+.file__t{margin:16px 0 0;font-weight:800;font-size:clamp(40px,4.2vw,62px);line-height:.92;letter-spacing:-.035em;text-shadow:var(--glow)}
+.file__p{margin:18px 0 0;font-size:clamp(18px,1.4vw,21px);line-height:1.45;color:var(--paper-2)}
+.file__p em{font-style:normal;color:#fff;text-shadow:var(--glow)}
+.file__facts{margin:18px 0 0;padding:0;list-style:none;display:grid;gap:8px}
+.file__facts li{display:flex;gap:12px;font-family:var(--mono);font-size:12px;letter-spacing:.04em;line-height:1.6;color:var(--paper-2)}
+.file__facts li::before{content:"";flex:none;width:8px;height:8px;margin-top:6px;background:var(--bean);box-shadow:0 0 8px var(--bean)}
+.file__imgs{margin-top:24px;display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.file__imgs figure{margin:0;position:relative;overflow:hidden;border-radius:4px;box-shadow:0 0 0 1px rgba(241,237,247,.14),0 30px 60px -30px #000}
+.file__imgs figure:only-child,.file__imgs figure.wide{grid-column:1 / -1}
+.file__imgs img{width:100%;height:100%;object-fit:cover;transition:transform 1.4s var(--ease),filter .6s}
+.file__imgs figure:hover img{transform:scale(1.05);filter:saturate(1.15)}
+.file__imgs figcaption{position:absolute;left:10px;top:10px;padding:3px 8px;background:rgba(6,5,10,.75);font-family:var(--mono);font-size:10px;letter-spacing:.12em;color:var(--bean-2)}
+.file__link{display:inline-flex;margin-top:18px;font-family:var(--mono);font-size:12px;letter-spacing:.08em;color:var(--hazard);text-underline-offset:4px}
+.file__nav{margin-top:26px;display:flex;flex-wrap:wrap;gap:8px}
+.navb{height:44px;padding:0 16px;border-radius:4px;border:1px solid var(--line);background:rgba(255,255,255,.04);font-family:var(--mono);font-size:11px;letter-spacing:.12em;cursor:pointer;transition:border-color .3s,box-shadow .3s}
+.navb:hover{border-color:var(--bean);box-shadow:var(--glow)}
+.navb--home{margin-left:auto}
+.file__acts{margin-top:22px;display:flex;flex-wrap:wrap;gap:10px}
+.file__foot{margin-top:24px;font-size:13px;color:var(--paper-3)}
+.file > *{opacity:0;transform:translateY(18px);transition:opacity .7s var(--ease),transform .9s var(--ease)}
+.file.open > *{opacity:1;transform:none}
+.file.open > :nth-child(2){transition-delay:.06s}.file.open > :nth-child(3){transition-delay:.12s}.file.open > :nth-child(4){transition-delay:.18s}.file.open > :nth-child(5){transition-delay:.24s}.file.open > :nth-child(6){transition-delay:.3s}
+
+/* ---------- Intro overlay ---------- */
+.intro{position:fixed;inset:0;z-index:80;pointer-events:none}
+.intro__black{position:absolute;inset:0;background:#000}
+.log{position:absolute;left:var(--pad);top:calc(26px + env(safe-area-inset-top,0px));font-family:var(--mono);font-size:12px;letter-spacing:.1em;line-height:1.9;color:var(--phos);text-shadow:0 0 8px rgba(125,255,176,.6)}
+.log .r{color:var(--alarm);text-shadow:var(--glow-red)}
+.breach{position:absolute;left:0;right:0;top:50%;transform:translateY(-50%);text-align:center;font-weight:800;font-size:clamp(40px,8vw,130px);line-height:.9;letter-spacing:-.03em;color:var(--alarm);text-shadow:var(--glow-red);opacity:0}
+.breach small{display:block;margin-top:14px;font-family:var(--mono);font-weight:400;font-size:clamp(11px,1.2vw,14px);letter-spacing:.3em;color:#fff}
+.intro__skip{position:fixed;right:var(--pad);bottom:calc(22px + env(safe-area-inset-bottom,0px));z-index:81;background:none;border:0;padding:8px;font-family:var(--mono);font-size:11px;letter-spacing:.18em;color:var(--paper-3);cursor:pointer;text-decoration:underline;text-underline-offset:4px;pointer-events:auto}
+.intro__skip:hover{color:var(--paper)}
+
+.pop{position:fixed;z-index:70;pointer-events:none;font-weight:800;color:#fff;text-shadow:var(--glow);transform:translate(-50%,-50%);white-space:nowrap}
+.bub{position:fixed;z-index:70;width:12px;height:12px;border-radius:50%;pointer-events:none;border:1.5px solid rgba(213,155,255,.9);box-shadow:0 0 10px rgba(164,60,255,.7),inset 0 0 6px rgba(255,255,255,.4)}
+.toast{position:fixed;left:50%;bottom:calc(24px + env(safe-area-inset-bottom,0px));z-index:95;transform:translate(-50%,20px);padding:12px 20px;border-radius:6px;background:#ece8f2;color:#16121e;font-family:var(--mono);font-size:13px;letter-spacing:.06em;box-shadow:0 0 40px rgba(164,60,255,.5);opacity:0;pointer-events:none;transition:opacity .3s,transform .4s var(--ease)}
+.toast.is-on{opacity:1;transform:translate(-50%,0)}
+
+@media (max-width:760px){
+  .brand span{display:none}
+  .chip--ca{display:none!important}
+  .hero{bottom:calc(3svh + env(safe-area-inset-bottom,0px))}
+  .title{font-size:clamp(64px,20vw,110px)}
+  .hero__lede{font-size:19px}
+  .xbtn{flex:1 1 100%}
+  .hint{display:none}
+  .file{top:auto;width:100vw;height:80svh;border-radius:16px 16px 0 0;padding-top:22px;transform:translateY(105%);background:rgba(6,5,10,.96)}
+  .file.open{transform:none}
+  .tag{padding:6px 9px}
+  .tag__t{font-size:12px}
+}
+@media (prefers-reduced-motion:reduce){
+  .film__grain,.ca__laser,.xbtn:hover::before{animation:none}
+}
+</style>
+</head>
+<body>
+
+<canvas id="lab" aria-label="A dark laboratory with a shattered containment tube and terminal screens. Use the file buttons to open each experiment file."></canvas>
+<div class="tags" id="tags"></div>
+<div class="redwash" id="redwash" aria-hidden="true"></div>
+<div class="film" aria-hidden="true"><div class="film__grain"></div><div class="film__scan"></div><div class="film__vig"></div></div>
+
+<!-- Intro -->
+<div class="intro" id="intro" aria-hidden="true">
+  <div class="intro__black" id="introBlack"></div>
+  <div class="log" id="log"></div>
+  <div class="breach" id="breach">CONTAINMENT BREACH<small>SUBJECT B-0419 HAS LEFT THE TUBE</small></div>
+</div>
+<button class="intro__skip" id="skip">Skip intro</button>
+
+<header class="bar" id="bar">
+  <div class="bar__in">
+    <button class="brand" id="brand" aria-label="Beanos, back to the lab"><img src="assets/icon-180.png" alt=""><span>$BEANOS</span></button>
+    <div class="bar__acts">
+      <button class="chip chip--ca" id="barCa" hidden>Copy CA</button>
+      <a class="chip" data-x target="_blank" rel="noopener"><svg class="xmark" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>Follow</a>
+    </div>
+  </div>
+</header>
+
+<main>
+  <section class="hero" id="hero" aria-label="Beanos">
+    <div class="hero__k"><span>SUBJECT <b>B-0419</b></span><span>CLASS <b>MEME</b></span><span>STATUS <b id="status">ESCAPED</b></span></div>
+    <h1 class="title" id="title" aria-label="$BEANOS"><span class="ch d">$</span><span class="ch">B</span><span class="ch">E</span><span class="ch">A</span><span class="ch">N</span><span class="ch">O</span><span class="ch">S</span></h1>
+    <p class="hero__lede">The trenches asked for a savior. <em>They got a bean.</em></p>
+    <div class="hero__acts">
+      <div class="ca" data-ca>
+        <span class="ca__bar" aria-hidden="true"></span>
+        <span class="ca__txt"><span class="ca__tag">SPECIMEN CONTRACT</span><span class="ca__val" data-ca-val></span></span>
+        <button class="ca__copy" data-ca-copy>COPY</button>
+        <span class="ca__laser" aria-hidden="true"></span>
+      </div>
+      <a class="xbtn" data-x target="_blank" rel="noopener"><svg class="xmark" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>Follow on X</a>
+    </div>
+    <a class="kym" data-kym target="_blank" rel="noopener">KNOW YOUR MEME: READ HIS FILE</a>
+  </section>
+  <div class="hint" id="hint"><b>Six files. One bean.</b>Click a screen to open its file. Drag to look around. Poke the bean.</div>
+
+  <aside class="file" id="file" aria-live="polite" aria-label="Experiment file">
+    <div class="file__head"><span id="fileId"></span><b id="fileStamp">CLASSIFIED</b></div>
+    <h2 class="file__t" id="fileT"></h2>
+    <p class="file__p" id="fileP"></p>
+    <div id="fileExtra"></div>
+    <div class="file__imgs" id="fileImgs"></div>
+    <div class="file__nav">
+      <button class="navb" id="prevB">PREV FILE</button>
+      <button class="navb" id="nextB">NEXT FILE</button>
+      <button class="navb navb--home" id="homeB">BACK TO THE LAB</button>
+    </div>
+  </aside>
+</main>
+
+<template id="tplOrigin">
+  <ul class="file__facts">
+    <li>First appeared in 2019.</li>
+    <li>A suggestive purple little face that works in any situation.</li>
+    <li>Kinda gives blob vibes: easily memable, and normies relate.</li>
+  </ul>
+  <a class="file__link" data-kym target="_blank" rel="noopener">Open the Know Your Meme entry</a>
+</template>
+<template id="tplSpread">
+  <ul class="file__facts">
+    <li>Tonnes of memes seen all over Twitter, Reddit and Instagram.</li>
+    <li>Some video edits passed 10M+ views on YouTube.</li>
+  </ul>
+</template>
+<template id="tplJoin">
+  <div class="file__acts">
+    <div class="ca" data-ca>
+      <span class="ca__bar" aria-hidden="true"></span>
+      <span class="ca__txt"><span class="ca__tag">SPECIMEN CONTRACT</span><span class="ca__val" data-ca-val></span></span>
+      <button class="ca__copy" data-ca-copy>COPY</button>
+      <span class="ca__laser" aria-hidden="true"></span>
+    </div>
+    <a class="xbtn" data-x target="_blank" rel="noopener">Follow on X</a>
+  </div>
+  <p class="file__foot">© 2026 $BEANOS. A meme coin with no intrinsic value or expectation of financial return. No magical promise of riches. Nothing here is financial advice.</p>
+</template>
+
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.149.0/build/three.min.js"></script>
+<script>
+/* =========================================================
+   CONFIG — schimbă aici:
+   ca:   adresa contractului (lasă "" până la lansare)
+   x:    linkul contului tău de X
+   kym:  pagina Know Your Meme
+   ========================================================= */
+const CONFIG = {
+  ca: "",
+  x: "https://x.com/",
+  kym: "https://knowyourmeme.com/memes/beanos"
+};
+
+const $ = (s, r = document) => r.querySelector(s);
+const $$ = (s, r = document) => [...r.querySelectorAll(s)];
+const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
+const lerp = (a, b, t) => a + (b - a) * t;
+const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+const coarse = matchMedia('(pointer: coarse)').matches;
+const hasGSAP = !!window.gsap;
+
+const IMG = {
+  main: 'assets/main.webp', banner: 'assets/banner.webp', suit: 'assets/suit.webp', garage: 'assets/garage.webp',
+  general: 'assets/general.webp', hero: 'assets/hero.webp', heist: 'assets/heist.webp', chase: 'assets/chase.webp',
+  samurai: 'assets/samurai.webp', tactical: 'assets/tactical.webp', space: 'assets/space.webp', street: 'assets/street.webp', sniper: 'assets/sniper.webp'
+};
+
+/* Six experiment files, six terminals */
+const FILES = [
+  { id: 'FILE 001', t: 'Origin', screen: 'main', tpl: 'tplOrigin',
+    p: 'Beanos is a meme that first surfaced in 2019. <em>A suggestive purple little face</em> you can drop into any situation.',
+    imgs: [['main', 'Beanos standing in a glowing green field at sunrise, side-eyeing the camera', 'SPECIMEN', 'wide'], ['banner', 'A row of Beanos in different hats in front of giant stone letters spelling Beanos', 'THE FAMILY', 'wide']] },
+  { id: 'FILE 002', t: 'Spread', screen: 'suit', tpl: 'tplSpread',
+    p: 'Nobody contained it. <em>People made tonnes of memes</em>, and the edits kept getting bigger.',
+    imgs: [['suit', 'Beanos in a suit and sunglasses spraying champagne before a wall of green charts', 'GREEN DAY', 'wide'], ['garage', 'Beanos in a tracksuit and gold chain standing on a black supercar, bags of cash around', 'PARKING LEVEL'], ['street', 'Beanos in a puffer jacket and iced-out chain on a foggy night street', 'NIGHT SHIFT']] },
+  { id: 'FILE 003', t: 'Summoning', screen: 'general',
+    p: 'The trenches tried to summon the next big thing, but all they got was Beanos. No grand entrance, no explanation. <em>Just a bean with the confidence of a final boss.</em>',
+    imgs: [['general', 'Beanos in a general\'s greatcoat on a tank, an army of helmeted beans behind him and a green chart in the burning sky', 'THE GENERAL', 'wide'], ['hero', 'Beanos with a crown and cape flying between skyscrapers through lightning and broken glass', 'FINAL BOSS']] },
+  { id: 'FILE 004', t: 'Mission', screen: 'heist',
+    p: 'While everyone argued over complicated narratives, he turned the whole room into a shitpost. That became his mission: <em>bring the meme back to memecoins.</em>',
+    imgs: [['heist', 'Beanos in a hoodie running out of a bank vault with a bag of cash as red lasers cross the room', 'THE HEIST', 'wide'], ['chase', 'Beanos in a tuxedo on the hood of a speeding car in a neon city chase', 'THE GETAWAY', 'wide']] },
+  { id: 'FILE 005', t: 'The Lore', screen: 'samurai',
+    p: 'In his world, every holder is a co-author and every edit adds to the lore. <em>Taking yourself too seriously is the only crime.</em>',
+    imgs: [['samurai', 'Beanos in samurai armour with a glowing pink katana in a bamboo forest', 'RONIN'], ['tactical', 'Beanos in tactical gear on a giant green arrow crushing red candles in a lightning storm', 'OPERATOR'], ['space', 'Beanos floating in an astronaut suit beside a space station above Earth', 'ORBIT', 'wide']] },
+  { id: 'FILE 006', t: 'Join', screen: 'sniper', tpl: 'tplJoin',
+    p: 'The reason to join isn\'t some magical promise of riches. It\'s helping turn one ridiculous character into a shared obsession. Buy into the absurdity, bring your worst memes, and help write the next chapter. <em>The trenches asked for a savior. They got a bean.</em>',
+    imgs: [['sniper', 'Beanos in a ghillie suit with a sniper rifle on a rainy rooftop, shattering red candles over the city', 'OVERWATCH', 'wide']] }
+];
+
+/* ---------- Config wiring ---------- */
+function wire(root = document){
+  $$('[data-x]', root).forEach(a => a.href = CONFIG.x);
+  $$('[data-kym]', root).forEach(a => a.href = CONFIG.kym);
+  $$('[data-ca]', root).forEach(box => {
+    const v = $('[data-ca-val]', box), b = $('[data-ca-copy]', box);
+    if (CONFIG.ca){ v.textContent = CONFIG.ca; v.title = CONFIG.ca; b.addEventListener('click', copyCA); }
+    else { box.classList.add('is-empty'); v.textContent = 'AWAITING LAUNCH'; b.disabled = true; }
+  });
+}
+wire();
+if (CONFIG.ca){ const bc = $('#barCa'); bc.hidden = false; bc.addEventListener('click', copyCA); }
+const toast = $('#toast'); let toastT;
+function say(msg){ toast.textContent = msg; toast.classList.add('is-on'); clearTimeout(toastT); toastT = setTimeout(() => toast.classList.remove('is-on'), 2200); }
+async function copyCA(e){
+  let ok = false;
+  try { await navigator.clipboard.writeText(CONFIG.ca); ok = true; } catch (_) {
+    const t = document.createElement('textarea'); t.value = CONFIG.ca; t.style.position = 'fixed'; t.style.opacity = '0';
+    document.body.appendChild(t); t.select(); try { ok = document.execCommand('copy'); } catch (_) {} t.remove();
+  }
+  say(ok ? 'SAMPLE COPIED.' : 'Copy failed. Select the address and copy it manually.');
+  if (e) bubbles(e.clientX, e.clientY, 14);
+}
+function bubbles(x, y, n){
+  if (!hasGSAP || reduce) return;
+  for (let i = 0; i < n; i++){
+    const b = document.createElement('div'); b.className = 'bub'; b.style.left = x + 'px'; b.style.top = y + 'px';
+    const s = 6 + Math.random() * 16; b.style.width = b.style.height = s + 'px'; document.body.appendChild(b);
+    gsap.to(b, { x: (Math.random() - .5) * 160, y: -100 - Math.random() * 200, opacity: 0, duration: 1 + Math.random(), ease: 'power1.out', onComplete: () => b.remove() });
+  }
+}
+
+/* =========================================================
+   THE LAB (three.js)
+   ========================================================= */
+const L = { ready: false };
+function rnd(s){ return () => (s = (s * 16807) % 2147483647) / 2147483647; }
+const R = rnd(19);
+function cvTex(w, h, draw){ const c = document.createElement('canvas'); c.width = w; c.height = h; draw(c.getContext('2d'), w, h); const t = new THREE.CanvasTexture(c); t.encoding = THREE.sRGBEncoding; return t; }
+function texPair(w, h, draw, rep){
+  const c = document.createElement('canvas'); c.width = w; c.height = h; const g = c.getContext('2d'); draw(g, w, h);
+  const map = new THREE.CanvasTexture(c); map.encoding = THREE.sRGBEncoding;
+  const b = document.createElement('canvas'); b.width = w; b.height = h; const bg = b.getContext('2d'); bg.drawImage(c, 0, 0);
+  const id = bg.getImageData(0, 0, w, h), d = id.data; for (let i = 0; i < d.length; i += 4){ const v = d[i] * .3 + d[i + 1] * .59 + d[i + 2] * .11; d[i] = d[i + 1] = d[i + 2] = v; } bg.putImageData(id, 0, 0);
+  const bump = new THREE.CanvasTexture(b);
+  [map, bump].forEach(t => { t.wrapS = t.wrapT = THREE.RepeatWrapping; t.repeat.set(rep[0], rep[1]); t.anisotropy = 4; });
+  return { map, bump };
+}
+function speckle(g, w, h, n, a){ for (let i = 0; i < n; i++){ const v = R() < .5 ? 0 : 255; g.fillStyle = `rgba(${v},${v},${v},${R() * a})`; g.fillRect(R() * w, R() * h, 1 + R() * 2, 1 + R() * 2); } }
+function blotch(g, w, h, n, col, rmax){ for (let i = 0; i < n; i++){ const x = R() * w, y = R() * h, r = 6 + R() * rmax; const gr = g.createRadialGradient(x, y, 0, x, y, r); gr.addColorStop(0, col); gr.addColorStop(1, 'rgba(0,0,0,0)'); g.fillStyle = gr; g.fillRect(x - r, y - r, r * 2, r * 2); } }
+
+function build(){
+  if (!window.THREE) return false;
+  let renderer;
+  try { renderer = new THREE.WebGLRenderer({ canvas: $('#lab'), antialias: !coarse, powerPreference: 'high-performance' }); } catch (e) { return false; }
+  renderer.setPixelRatio(Math.min(devicePixelRatio || 1, coarse ? 1.25 : 1.6));
+  renderer.setSize(innerWidth, innerHeight, false);
+  renderer.outputEncoding = THREE.sRGBEncoding;
+  renderer.toneMapping = THREE.ACESFilmicToneMapping; renderer.toneMappingExposure = 1.15;
+  if (!coarse){ renderer.shadowMap.enabled = true; renderer.shadowMap.type = THREE.PCFSoftShadowMap; }
+  const scene = new THREE.Scene();
+  scene.background = new THREE.Color('#040307');
+  scene.fog = new THREE.FogExp2('#08060d', .045);
+  const camera = new THREE.PerspectiveCamera(innerWidth < 760 ? 62 : 45, innerWidth / innerHeight, .05, 120);
+  camera.position.set(0, 1.7, 8.5);
+
+  const halo = cvTex(256, 256, (g, w, h) => { const gr = g.createRadialGradient(w / 2, h / 2, 0, w / 2, h / 2, w / 2); gr.addColorStop(0, 'rgba(255,255,255,.75)'); gr.addColorStop(.3, 'rgba(255,255,255,.22)'); gr.addColorStop(1, 'rgba(255,255,255,0)'); g.fillStyle = gr; g.fillRect(0, 0, w, h); });
+  const glowSprite = (color, size, op = .8) => { const s = new THREE.Sprite(new THREE.SpriteMaterial({ map: halo, color, transparent: true, depthWrite: false, blending: THREE.AdditiveBlending, opacity: op })); s.scale.set(size, size, 1); return s; };
+
+  // ---------- textures
+  const T = {};
+  T.concrete = texPair(1024, 1024, (g, w, h) => {
+    g.fillStyle = '#2a2830'; g.fillRect(0, 0, w, h);
+    blotch(g, w, h, 300, 'rgba(10,10,14,.45)', 90); blotch(g, w, h, 160, 'rgba(70,66,80,.35)', 70); blotch(g, w, h, 30, 'rgba(60,40,20,.35)', 120);
+    g.strokeStyle = 'rgba(0,0,0,.6)'; g.lineWidth = 3; for (let i = 0; i <= 4; i++){ g.beginPath(); g.moveTo(i * w / 4, 0); g.lineTo(i * w / 4, h); g.stroke(); g.beginPath(); g.moveTo(0, i * h / 4); g.lineTo(w, i * h / 4); g.stroke(); }
+    for (let i = 0; i < 30; i++){ g.strokeStyle = 'rgba(0,0,0,.4)'; g.lineWidth = 1; g.beginPath(); let x = R() * w, y = R() * h; g.moveTo(x, y); for (let k = 0; k < 5; k++){ x += (R() - .5) * 60; y += (R() - .5) * 60; g.lineTo(x, y); } g.stroke(); }
+    speckle(g, w, h, 30000, .3);
+  }, [4, 4]);
+  T.panel = texPair(512, 512, (g, w, h) => {
+    const gr = g.createLinearGradient(0, 0, w, 0); gr.addColorStop(0, '#2c2d34'); gr.addColorStop(.5, '#3a3b44'); gr.addColorStop(1, '#2a2b31'); g.fillStyle = gr; g.fillRect(0, 0, w, h);
+    for (let y = 0; y < h; y += 2){ g.fillStyle = `rgba(255,255,255,${R() * .03})`; g.fillRect(0, y, w, 1); }
+    g.strokeStyle = 'rgba(0,0,0,.7)'; g.lineWidth = 4; g.strokeRect(2, 2, w - 4, h - 4); g.beginPath(); g.moveTo(0, h / 2); g.lineTo(w, h / 2); g.stroke();
+    g.fillStyle = 'rgba(0,0,0,.55)'; for (const [x, y] of [[16, 16], [w - 16, 16], [16, h - 16], [w - 16, h - 16], [16, h / 2 - 14], [w - 16, h / 2 - 14], [16, h / 2 + 14], [w - 16, h / 2 + 14]]){ g.beginPath(); g.arc(x, y, 5, 0, 6.283); g.fill(); }
+    blotch(g, w, h, 20, 'rgba(90,50,20,.3)', 50); blotch(g, w, h, 30, 'rgba(0,0,0,.35)', 60); speckle(g, w, h, 6000, .2);
+  }, [8, 2]);
+  T.hazard = cvTex(512, 64, (g, w, h) => { g.fillStyle = '#111'; g.fillRect(0, 0, w, h); g.fillStyle = '#e0b52a'; for (let x = -h; x < w + h; x += 48){ g.beginPath(); g.moveTo(x, h); g.lineTo(x + 24, h); g.lineTo(x + 24 + h, 0); g.lineTo(x + h, 0); g.fill(); } g.fillStyle = 'rgba(0,0,0,.35)'; for (let i = 0; i < 1500; i++) g.fillRect(R() * w, R() * h, 2, 2); });
+  T.hazard.wrapS = THREE.RepeatWrapping; T.hazard.repeat.set(10, 1);
+  T.metal = texPair(256, 256, (g, w, h) => { g.fillStyle = '#5b5e66'; g.fillRect(0, 0, w, h); for (let y = 0; y < h; y++){ g.fillStyle = `rgba(${R() < .5 ? 0 : 255},${R() < .5 ? 0 : 255},${R() < .5 ? 0 : 255},${R() * .06})`; g.fillRect(0, y, w, 1); } blotch(g, w, h, 12, 'rgba(0,0,0,.3)', 40); }, [2, 2]);
+
+  // ---------- room: concrete floor, curved panelled wall, ceiling
+  const floor = new THREE.Mesh(new THREE.PlaneGeometry(40, 40), new THREE.MeshStandardMaterial({ map: T.concrete.map, bumpMap: T.concrete.bump, bumpScale: .03, roughness: .42, metalness: .25 }));
+  floor.rotation.x = -Math.PI / 2; floor.receiveShadow = true; scene.add(floor);
+  const wall = new THREE.Mesh(new THREE.CylinderGeometry(11, 11, 8, 64, 1, true, Math.PI * .1, Math.PI * 1.8), new THREE.MeshStandardMaterial({ map: T.panel.map, bumpMap: T.panel.bump, bumpScale: .04, roughness: .55, metalness: .6, side: THREE.BackSide }));
+  wall.position.y = 4; wall.receiveShadow = true; scene.add(wall);
+  const ceil = new THREE.Mesh(new THREE.CircleGeometry(11, 48), new THREE.MeshStandardMaterial({ color: '#0d0c12', roughness: 1 })); ceil.rotation.x = Math.PI / 2; ceil.position.y = 8; scene.add(ceil);
+
+  // ceiling strip lights with volumetric cones
+  const strips = [];
+  const coneTex = cvTex(64, 256, (g, w, h) => { const gr = g.createLinearGradient(0, 0, 0, h); gr.addColorStop(0, 'rgba(255,255,255,.55)'); gr.addColorStop(1, 'rgba(255,255,255,0)'); g.fillStyle = gr; g.fillRect(0, 0, w, h); });
+  [[-4.5, -2], [4.5, -2], [0, -5.5], [-3, 3.5], [3, 3.5]].forEach(([x, z], i) => {
+    const fix = new THREE.Mesh(new THREE.BoxGeometry(2.2, .08, .3), new THREE.MeshBasicMaterial({ color: '#000' })); fix.position.set(x, 7.6, z); fix.lookAt(0, 7.6, 0); scene.add(fix);
+    const cone = new THREE.Mesh(new THREE.CylinderGeometry(.2, 2.6, 7.4, 24, 1, true), new THREE.MeshBasicMaterial({ map: coneTex, color: '#cfd8ff', transparent: true, opacity: 0, depthWrite: false, blending: THREE.AdditiveBlending, side: THREE.DoubleSide, fog: false }));
+    cone.position.set(x, 3.85, z); scene.add(cone);
+    const l = new THREE.PointLight('#dfe6ff', 0, 11, 2); l.position.set(x, 7, z); scene.add(l);
+    strips.push({ fix, cone, l, on: 0, seed: R() * 10 });
+  });
+  const key = new THREE.SpotLight('#e6e9ff', 0, 26, .55, .6, 1.6); key.position.set(2.5, 7.5, 4); key.target.position.set(0, 1, 0); scene.add(key, key.target);
+  if (!coarse){ key.castShadow = true; key.shadow.mapSize.set(1536, 1536); key.shadow.bias = -.0006; }
+  const amb = new THREE.HemisphereLight('#6a5f8a', '#110d0a', .18); scene.add(amb);
+
+  // alarm beacons
+  const alarms = [-1, 1].map(s => {
+    const g = new THREE.Group(); g.position.set(s * 5.5, 6.6, -3.5); scene.add(g);
+    const dome = new THREE.Mesh(new THREE.SphereGeometry(.22, 16, 12, 0, 6.283, 0, Math.PI / 2), new THREE.MeshBasicMaterial({ color: '#5a0a10' })); dome.rotation.x = Math.PI; g.add(dome);
+    const sp = new THREE.SpotLight('#ff2d3d', 0, 18, .45, .5, 1.4); sp.position.set(0, 0, 0); g.add(sp); const tgt = new THREE.Object3D(); g.add(tgt); sp.target = tgt;
+    const gl = glowSprite('#ff2d3d', 2.2, 0); g.add(gl);
+    return { g, dome, sp, tgt, gl };
+  });
+
+  // ---------- the containment tube
+  const metal = new THREE.MeshStandardMaterial({ map: T.metal.map, bumpMap: T.metal.bump, bumpScale: .02, color: '#9aa0aa', metalness: .9, roughness: .35 });
+  const tube = new THREE.Group(); scene.add(tube);
+  const base = new THREE.Mesh(new THREE.CylinderGeometry(1.45, 1.6, .55, 48), metal); base.position.y = .275; base.castShadow = base.receiveShadow = true; tube.add(base);
+  const cap = new THREE.Mesh(new THREE.CylinderGeometry(1.35, 1.45, .45, 48), metal); cap.position.y = 4.15; cap.castShadow = true; tube.add(cap);
+  for (let i = 0; i < 6; i++){ const a = i / 6 * 6.283; const rib = new THREE.Mesh(new THREE.BoxGeometry(.1, 3.6, .1), metal); rib.position.set(Math.cos(a) * 1.25, 2.2, Math.sin(a) * 1.25); rib.castShadow = true; tube.add(rib); }
+  const ringL = new THREE.Mesh(new THREE.TorusGeometry(1.3, .035, 8, 64), new THREE.MeshBasicMaterial({ color: '#c36bff' })); ringL.rotation.x = Math.PI / 2; ringL.position.y = .58; tube.add(ringL);
+  const glass = new THREE.Mesh(new THREE.CylinderGeometry(1.15, 1.15, 3.5, 48, 1, true), new THREE.MeshStandardMaterial({ color: '#cfe0ff', transparent: true, opacity: .16, roughness: .05, metalness: .3, side: THREE.DoubleSide, depthWrite: false }));
+  glass.position.y = 2.2; tube.add(glass);
+  const crackTex = cvTex(512, 512, (g, w, h) => { g.strokeStyle = 'rgba(255,255,255,.9)'; g.lineCap = 'round'; for (let k = 0; k < 9; k++){ let x = w * .5, y = h * .55, a = k / 9 * 6.283; g.lineWidth = 2.5; g.beginPath(); g.moveTo(x, y); for (let s = 0; s < 14; s++){ a += (R() - .5) * .5; x += Math.cos(a) * 22; y += Math.sin(a) * 22; g.lineTo(x, y); g.lineWidth = Math.max(.6, 2.5 - s * .15); } g.stroke(); } for (let r = 30; r < 150; r += 40){ g.lineWidth = 1; g.beginPath(); for (let a = 0; a < 6.3; a += .5) g.lineTo(w * .5 + Math.cos(a) * r * (0.8 + R() * .4), h * .55 + Math.sin(a) * r * (0.8 + R() * .4)); g.stroke(); } });
+  const cracks = new THREE.Mesh(new THREE.CylinderGeometry(1.16, 1.16, 3.5, 48, 1, true, -.9, 1.8), new THREE.MeshBasicMaterial({ map: crackTex, transparent: true, opacity: 0, depthWrite: false, side: THREE.DoubleSide }));
+  cracks.position.y = 2.2; tube.add(cracks);
+  const liquid = new THREE.Mesh(new THREE.CylinderGeometry(1.1, 1.1, 1, 48), new THREE.MeshStandardMaterial({ color: '#7a1fd6', emissive: '#5a0fb0', emissiveIntensity: .9, transparent: true, opacity: .45, roughness: .1, depthWrite: false }));
+  liquid.scale.y = 3.4; liquid.position.y = .55 + 1.7; tube.add(liquid);
+  const tubeLight = new THREE.PointLight('#b45cff', 3.2, 9, 2); tubeLight.position.set(0, 2.6, -1.6); tube.add(tubeLight);
+  const tubeGlow = glowSprite('#a43cff', 7, .55); tubeGlow.position.set(0, 2.2, -1.4); tube.add(tubeGlow);
+  // pipes & cables
+  const pipeM = new THREE.MeshStandardMaterial({ color: '#3b3d44', metalness: .85, roughness: .4 });
+  for (let i = 0; i < 3; i++){ const a = -.7 + i * .7; const p = new THREE.Mesh(new THREE.CylinderGeometry(.09, .09, 3.6, 12), pipeM); p.position.set(Math.cos(a) * .9, 6.2, Math.sin(a) * .9 - .2); tube.add(p); }
+  const cableM = new THREE.MeshStandardMaterial({ color: '#0d0d10', roughness: .7 });
+  for (let i = 0; i < 6; i++){ const a = R() * 6.283, r = 3 + R() * 4; const curve = new THREE.CatmullRomCurve3([new THREE.Vector3(Math.cos(a) * 1.5, .05, Math.sin(a) * 1.5), new THREE.Vector3(Math.cos(a) * (r * .5), .04, Math.sin(a) * (r * .5) + (R() - .5)), new THREE.Vector3(Math.cos(a) * r, .04, Math.sin(a) * r)]); const c = new THREE.Mesh(new THREE.TubeGeometry(curve, 30, .04, 6), cableM); c.receiveShadow = true; scene.add(c); }
+  // hazard ring around the tube and a purple puddle that grows after the breach
+  const hz = new THREE.Mesh(new THREE.RingGeometry(1.9, 2.25, 64), new THREE.MeshStandardMaterial({ map: T.hazard, roughness: .7 })); hz.rotation.x = -Math.PI / 2; hz.position.y = .005; hz.receiveShadow = true; scene.add(hz);
+  const puddle = new THREE.Mesh(new THREE.CircleGeometry(1, 48), new THREE.MeshStandardMaterial({ color: '#4a0f8a', emissive: '#3a0a70', emissiveIntensity: .7, roughness: .05, metalness: .4, transparent: true, opacity: .85 }));
+  puddle.rotation.x = -Math.PI / 2; puddle.position.y = .01; puddle.scale.setScalar(.01); scene.add(puddle);
+
+  // glass shards (hidden until the breach)
+  const SN = coarse ? 80 : 160;
+  const shards = new THREE.InstancedMesh(new THREE.TetrahedronGeometry(.12, 0), new THREE.MeshStandardMaterial({ color: '#dfe8ff', transparent: true, opacity: .55, roughness: .05, metalness: .5 }), SN);
+  const shardD = Array.from({ length: SN }, () => ({ p: new THREE.Vector3(), v: new THREE.Vector3(), r: new THREE.Euler(), vr: new THREE.Vector3(), s: .3 + R() * .7, live: false }));
+  shards.visible = false; scene.add(shards);
+  // splash droplets
+  const DN = 260; const dg = new THREE.BufferGeometry(); dg.setAttribute('position', new THREE.BufferAttribute(new Float32Array(DN * 3), 3));
+  const drops = new THREE.Points(dg, new THREE.PointsMaterial({ color: '#c06bff', size: .08, transparent: true, opacity: 0, depthWrite: false, blending: THREE.AdditiveBlending }));
+  const dropD = Array.from({ length: DN }, () => ({ p: new THREE.Vector3(), v: new THREE.Vector3() })); scene.add(drops);
+  // bubbles in the tube / steam after
+  const BN = 140; const bg2 = new THREE.BufferGeometry(); const bp = new Float32Array(BN * 3);
+  for (let i = 0; i < BN; i++){ const a = R() * 6.283, r = R() * 1; bp[i * 3] = Math.cos(a) * r; bp[i * 3 + 1] = .6 + R() * 3.3; bp[i * 3 + 2] = Math.sin(a) * r; }
+  bg2.setAttribute('position', new THREE.BufferAttribute(bp, 3));
+  const bubbleTex = cvTex(64, 64, (g, w, h) => { g.strokeStyle = 'rgba(255,255,255,.9)'; g.lineWidth = 3; g.beginPath(); g.arc(32, 32, 24, 0, 6.283); g.stroke(); g.fillStyle = 'rgba(255,255,255,.7)'; g.beginPath(); g.arc(24, 22, 5, 0, 6.283); g.fill(); });
+  const bubblesP = new THREE.Points(bg2, new THREE.PointsMaterial({ map: bubbleTex, color: '#e3c2ff', size: .12, transparent: true, depthWrite: false }));
+  tube.add(bubblesP);
+  const steamTex = cvTex(128, 128, (g, w, h) => { const gr = g.createRadialGradient(64, 64, 0, 64, 64, 64); gr.addColorStop(0, 'rgba(210,190,255,.35)'); gr.addColorStop(1, 'rgba(210,190,255,0)'); g.fillStyle = gr; g.fillRect(0, 0, w, h); });
+  const steam = Array.from({ length: coarse ? 14 : 26 }, () => { const s = new THREE.Sprite(new THREE.SpriteMaterial({ map: steamTex, transparent: true, depthWrite: false, opacity: 0 })); s.userData = { t: R(), x: (R() - .5) * 2, z: (R() - .5) * 2 }; scene.add(s); return s; });
+  // dust floating in the light cones
+  const MN = 600; const mg = new THREE.BufferGeometry(); const mp = new Float32Array(MN * 3);
+  for (let i = 0; i < MN; i++){ mp[i * 3] = (R() - .5) * 16; mp[i * 3 + 1] = R() * 7.5; mp[i * 3 + 2] = (R() - .5) * 14; }
+  mg.setAttribute('position', new THREE.BufferAttribute(mp, 3));
+  const motes = new THREE.Points(mg, new THREE.PointsMaterial({ color: '#e8e2ff', size: .025, transparent: true, opacity: .6, depthWrite: false, blending: THREE.AdditiveBlending }));
+  scene.add(motes);
+  // sparks from a torn cable
+  const KN = 80; const kg = new THREE.BufferGeometry(); kg.setAttribute('position', new THREE.BufferAttribute(new Float32Array(KN * 3), 3));
+  const sparks = new THREE.Points(kg, new THREE.PointsMaterial({ color: '#ffd27a', size: .05, transparent: true, opacity: .9, depthWrite: false, blending: THREE.AdditiveBlending }));
+  const sparkD = Array.from({ length: KN }, () => ({ p: new THREE.Vector3(0, -10, 0), v: new THREE.Vector3(), life: 0 })); scene.add(sparks);
+  const sparkSrc = new THREE.Vector3(-3.6, 5.6, -5.2);
+
+  // ---------- terminals with live screens
+  const loader = new THREE.TextureLoader();
+  const screenVS = 'varying vec2 vUv;void main(){vUv=uv;gl_Position=projectionMatrix*modelViewMatrix*vec4(position,1.);}';
+  const screenFS = `uniform sampler2D map;uniform float uTime,uOn,uHover;varying vec2 vUv;
+    void main(){vec2 uv=vUv;uv.x+=sin(uv.y*80.+uTime*6.)*.0015*uOn;
+      vec3 c=texture2D(map,uv).rgb;float scan=.82+.18*sin(uv.y*900.);float flick=.94+.06*sin(uTime*37.);
+      vec2 d=uv-.5;float vig=1.-dot(d,d)*1.4;c*=scan*flick*vig*(.85+uHover*.35);
+      c=mix(vec3(.02,.01,.04),c,uOn);gl_FragColor=vec4(pow(c,vec3(.95)),1.);}`;
+  const terms = [];
+  const deskM = new THREE.MeshStandardMaterial({ map: T.metal.map, color: '#3c3f47', metalness: .7, roughness: .5 });
+  const bezelM = new THREE.MeshStandardMaterial({ color: '#141418', roughness: .45, metalness: .5 });
+  FILES.forEach((f, i) => {
+    const ang = -Math.PI + .3 + i * ((Math.PI - .6) / (FILES.length - 1));
+    const r = 6.8;
+    const g = new THREE.Group(); g.position.set(Math.cos(ang) * r, 0, Math.sin(ang) * r); g.lookAt(0, 0, 0); scene.add(g);
+    const desk = new THREE.Mesh(new THREE.BoxGeometry(2.4, .12, 1.1), deskM); desk.position.set(0, 1.05, .2); desk.castShadow = desk.receiveShadow = true; g.add(desk);
+    [-1, 1].forEach(s => { const leg = new THREE.Mesh(new THREE.BoxGeometry(.1, 1.05, .9), deskM); leg.position.set(s * 1.1, .525, .2); g.add(leg); });
+    const kb = new THREE.Mesh(new THREE.BoxGeometry(1, .04, .32), bezelM); kb.position.set(0, 1.13, .5); g.add(kb);
+    const led = new THREE.Mesh(new THREE.BoxGeometry(.9, .01, .26), new THREE.MeshBasicMaterial({ color: '#7a2cff' })); led.position.set(0, 1.16, .5); g.add(led);
+    const mon = new THREE.Group(); mon.position.set(0, 2.15, -.1); mon.rotation.x = -.06; g.add(mon);
+    const bez = new THREE.Mesh(new THREE.BoxGeometry(2.1, 1.45, .14), bezelM); bez.castShadow = true; mon.add(bez);
+    const mat = new THREE.ShaderMaterial({ uniforms: { map: { value: null }, uTime: { value: 0 }, uOn: { value: 0 }, uHover: { value: 0 } }, vertexShader: screenVS, fragmentShader: screenFS });
+    const scr = new THREE.Mesh(new THREE.PlaneGeometry(1.92, 1.28), mat); scr.position.z = .075; mon.add(scr);
+    loader.load(IMG[f.screen], t => { t.encoding = THREE.sRGBEncoding; mat.uniforms.map.value = t; });
+    const stand = new THREE.Mesh(new THREE.BoxGeometry(.12, .6, .12), bezelM); stand.position.set(0, -.95, 0); mon.add(stand);
+    const gl = glowSprite('#b48cff', 3.4, .0); gl.position.z = .3; mon.add(gl);
+    const pl = new THREE.PointLight('#a97bff', 0, 4, 2); pl.position.set(0, 0, .8); mon.add(pl);
+    scr.userData.i = i;
+    terms.push({ g, mon, scr, mat, gl, pl, ang });
+  });
+
+  // =========================================================
+  // BEANOS: matte clay-purple capsule, neon rim light, deep eye sockets,
+  // side-eye, a bulb nose and a one-sided smirk
+  // =========================================================
+  const bean = new THREE.Group();
+  // stylised clay shader: keeps his purple rich no matter how the lab lights move
+  const skin = new THREE.ShaderMaterial({ uniforms: { uFlash: { value: 0 } },
+    vertexShader: 'varying vec3 vN;varying vec3 vV;void main(){vec4 mv=modelViewMatrix*vec4(position,1.);vN=normalize(normalMatrix*normal);vV=normalize(-mv.xyz);gl_Position=projectionMatrix*mv;}',
+    fragmentShader: `uniform float uFlash;varying vec3 vN;varying vec3 vV;
+      void main(){ vec3 n=normalize(vN); vec3 L1=normalize(vec3(-.5,.8,.6)); vec3 L2=normalize(vec3(.7,.1,.4));
+        float d=max(dot(n,L1),0.), d2=max(dot(n,L2),0.);
+        vec3 shadow=vec3(.16,.03,.36), mid=vec3(.47,.12,.86), lit=vec3(.66,.3,1.);
+        vec3 c=mix(shadow,mid,smoothstep(0.,.55,d)); c=mix(c,lit,smoothstep(.55,1.,d)*.7);
+        c+=vec3(.55,.2,.9)*d2*.25;
+        vec3 h=normalize(L1+vV); c+=vec3(1.,.85,1.)*pow(max(dot(n,h),0.),40.)*.35;
+        float f=pow(1.-max(dot(n,vV),0.),2.5); c+=vec3(1.,.42,.98)*f*.55;
+        c+=uFlash*vec3(.4,.1,.5);
+        gl_FragColor=vec4(c,1.);}` });
+  skin.toneMapped = false;
+  const BR = .5, BL = 1.45;
+  const body = new THREE.Mesh(new THREE.CapsuleGeometry(BR, BL, 20, 48), skin); body.castShadow = true; bean.add(body);
+  // neon rim: a fresnel shell that glows only on the silhouette, like the original art
+  const rimMat = new THREE.ShaderMaterial({ transparent: true, depthWrite: false, blending: THREE.AdditiveBlending, uniforms: { uCol: { value: new THREE.Color('#ff6af5') }, uPow: { value: 3.2 }, uAmt: { value: 1.1 } },
+    vertexShader: 'varying vec3 vN;varying vec3 vV;void main(){vec4 mv=modelViewMatrix*vec4(position,1.);vN=normalize(normalMatrix*normal);vV=normalize(-mv.xyz);gl_Position=projectionMatrix*mv;}',
+    fragmentShader: 'uniform vec3 uCol;uniform float uPow,uAmt;varying vec3 vN;varying vec3 vV;void main(){float f=pow(1.-max(dot(vN,vV),0.),uPow);gl_FragColor=vec4(uCol*f*uAmt+vec3(1.)*pow(f,6.)*.6,f);}' });
+  const rim = new THREE.Mesh(new THREE.CapsuleGeometry(BR * 1.015, BL, 20, 48), rimMat); bean.add(rim);
+  // face sits off-centre, towards his right, like the meme
+  const face = new THREE.Group(); face.position.set(-.05, .5, 0); face.rotation.y = -.2; bean.add(face);
+  const eyeWhite = new THREE.MeshPhysicalMaterial({ color: '#f6f4ef', roughness: .2, clearcoat: 1, clearcoatRoughness: .05 });
+  const irisTex = cvTex(256, 256, (g, w, h) => {
+    const c = 128; const gr = g.createRadialGradient(c, c, 10, c, c, 120);
+    gr.addColorStop(0, '#08202e'); gr.addColorStop(.35, '#13607e'); gr.addColorStop(.7, '#1f8fb2'); gr.addColorStop(.92, '#0c3c55'); gr.addColorStop(1, '#04141e');
+    g.fillStyle = gr; g.beginPath(); g.arc(c, c, 120, 0, 6.283); g.fill();
+    for (let i = 0; i < 140; i++){ const a = R() * 6.283, r0 = 40 + R() * 10, r1 = 90 + R() * 28; g.strokeStyle = `rgba(${120 + R() * 80},${200 + R() * 55},255,${.08 + R() * .2})`; g.lineWidth = 1 + R() * 1.5; g.beginPath(); g.moveTo(c + Math.cos(a) * r0, c + Math.sin(a) * r0); g.lineTo(c + Math.cos(a) * r1, c + Math.sin(a) * r1); g.stroke(); }
+    g.fillStyle = '#010305'; g.beginPath(); g.arc(c, c, 42, 0, 6.283); g.fill();
+    g.fillStyle = 'rgba(255,255,255,.95)'; g.beginPath(); g.arc(c - 30, c - 32, 13, 0, 6.283); g.fill();
+    g.fillStyle = 'rgba(255,255,255,.45)'; g.beginPath(); g.arc(c + 24, c + 26, 5, 0, 6.283); g.fill();
+  });
+  const eyes = [];
+  [[-.21, .02, .33, .19], [.19, .03, .37, .18]].forEach(([x, y, z, rr], k) => {
+    // socket: a fleshy rim around each eye
+    const sock = new THREE.Mesh(new THREE.TorusGeometry(rr * 1.02, rr * .32, 16, 40), skin); sock.position.set(x, y, z - rr * .25); sock.scale.set(1, 1, .7); face.add(sock);
+    const brow = new THREE.Mesh(new THREE.SphereGeometry(rr * 1.05, 24, 16, 0, 6.283, 0, Math.PI * .45), skin); brow.position.set(x, y + rr * .32, z - rr * .25); brow.rotation.x = -.5; brow.scale.set(1.12, .7, 1); face.add(brow);
+    const pivot = new THREE.Group(); pivot.position.set(x, y, z); face.add(pivot);
+    const ball = new THREE.Mesh(new THREE.SphereGeometry(rr, 40, 28), eyeWhite); pivot.add(ball);
+    const iris = new THREE.Mesh(new THREE.SphereGeometry(rr * 1.004, 40, 20, 0, 6.283, 0, .78), new THREE.MeshBasicMaterial({ map: irisTex })); iris.rotation.x = Math.PI / 2; pivot.add(iris);
+    eyes.push({ pivot, side: k });
+  });
+  const nose = new THREE.Mesh(new THREE.SphereGeometry(.09, 24, 18), skin); nose.scale.set(.9, 1.05, 1.05); nose.position.set(-.04, -.2, .47); face.add(nose);
+  const nostril = new THREE.Mesh(new THREE.SphereGeometry(.02, 10, 8), new THREE.MeshBasicMaterial({ color: '#1a0438' })); nostril.position.set(-.07, -.26, .53); face.add(nostril);
+  const nostril2 = nostril.clone(); nostril2.position.x = 0; face.add(nostril2);
+  // smirk: a curved groove, deeper on one side, with a puffed cheek
+  const smirkCurve = new THREE.CatmullRomCurve3([new THREE.Vector3(-.21, -.35, .46), new THREE.Vector3(-.09, -.41, .505), new THREE.Vector3(.05, -.4, .505), new THREE.Vector3(.16, -.32, .47)]);
+  const mouth = new THREE.Mesh(new THREE.TubeGeometry(smirkCurve, 24, .022, 8), new THREE.MeshBasicMaterial({ color: '#1a0436' })); face.add(mouth);
+  const cheek = new THREE.Mesh(new THREE.SphereGeometry(.11, 20, 14), skin); cheek.position.set(-.24, -.31, .33); cheek.scale.set(1, .75, .55); face.add(cheek);
+  const aura = glowSprite('#b44cff', 3.4, .3); aura.position.z = -.7; bean.add(aura);
+  const beanLight = new THREE.PointLight('#c070ff', .9, 5, 2); beanLight.position.set(.4, .5, 1.1); bean.add(beanLight);
+  const beanKey = new THREE.SpotLight('#d9b8ff', 0, 9, .32, .7, 1.4); beanKey.position.set(-1.5, 6.5, 2.5); scene.add(beanKey); bean.add(beanKey.target);
+  if (!coarse) beanKey.castShadow = false;
+
+  // ---------- effects around him ----------
+  // scanner: two laser rings sweep up and down his body
+  const scanMat = new THREE.MeshBasicMaterial({ color: '#d58bff', transparent: true, opacity: .9, blending: THREE.AdditiveBlending, depthWrite: false });
+  const scans = [0, 1].map(k => { const r = new THREE.Mesh(new THREE.TorusGeometry(.78, .012, 8, 80), scanMat); r.rotation.x = Math.PI / 2; scene.add(r); return r; });
+  const bandTex = cvTex(16, 128, (g, w, h) => { const gr = g.createLinearGradient(0, 0, 0, h); gr.addColorStop(0, 'rgba(213,139,255,0)'); gr.addColorStop(.5, 'rgba(213,139,255,.5)'); gr.addColorStop(1, 'rgba(213,139,255,0)'); g.fillStyle = gr; g.fillRect(0, 0, w, h); });
+  const band = new THREE.Mesh(new THREE.CylinderGeometry(.78, .78, .5, 64, 1, true), new THREE.MeshBasicMaterial({ map: bandTex, transparent: true, depthWrite: false, blending: THREE.AdditiveBlending, side: THREE.DoubleSide })); scene.add(band);
+  // holograms orbiting him: vitals, a label and a little chart
+  const holoTex = [
+    cvTex(256, 128, (g, w, h) => { g.strokeStyle = 'rgba(213,139,255,.9)'; g.lineWidth = 2; g.strokeRect(4, 4, w - 8, h - 8); g.font = '600 20px "Martian Mono", monospace'; g.fillStyle = '#e9c8ff'; g.fillText('B-0419', 16, 36); g.font = '14px "Martian Mono", monospace'; g.fillStyle = '#ff6b7a'; g.fillText('STATUS: ESCAPED', 16, 64); g.fillStyle = '#b48cff'; g.fillText('THREAT: MEME', 16, 90); g.fillText('VIBE: UNBOTHERED', 16, 112); }),
+    cvTex(256, 128, (g, w, h) => { g.strokeStyle = 'rgba(125,255,176,.9)'; g.lineWidth = 2; g.strokeRect(4, 4, w - 8, h - 8); g.beginPath(); let y = 90; g.moveTo(12, y); for (let x = 12; x < w - 12; x += 8){ y = clamp(y + (R() - .62) * 16, 18, 112); g.lineTo(x, y); } g.stroke(); g.font = '13px "Martian Mono", monospace'; g.fillStyle = '#7dffb0'; g.fillText('MEME SIGNAL', 14, 24); }),
+    cvTex(256, 128, (g, w, h) => { g.strokeStyle = 'rgba(213,139,255,.9)'; g.lineWidth = 2; g.strokeRect(4, 4, w - 8, h - 8); g.font = '13px "Martian Mono", monospace'; g.fillStyle = '#e9c8ff'; g.fillText('HEART RATE', 14, 24); g.strokeStyle = '#ff6b7a'; g.lineWidth = 3; g.beginPath(); let x = 10; g.moveTo(x, 80); [[40, 80], [52, 40], [62, 110], [72, 80], [130, 80], [142, 34], [152, 112], [162, 80], [246, 80]].forEach(([a, b]) => g.lineTo(a, b)); g.stroke(); })
+  ];
+  const holos = holoTex.map((t, i) => { const s = new THREE.Sprite(new THREE.SpriteMaterial({ map: t, transparent: true, depthWrite: false, blending: THREE.AdditiveBlending, opacity: 0 })); s.scale.set(1.1, .55, 1); s.userData.a = i / 3 * 6.283; scene.add(s); return s; });
+  // purple goo dripping from the broken cap, with ripples where it lands
+  const DR = 30; const drg = new THREE.BufferGeometry(); drg.setAttribute('position', new THREE.BufferAttribute(new Float32Array(DR * 3), 3));
+  const drips = new THREE.Points(drg, new THREE.PointsMaterial({ color: '#c46bff', size: .07, transparent: true, opacity: .95, depthWrite: false }));
+  const dripD = Array.from({ length: DR }, () => ({ a: R() * 6.283, y: 3.9 - R() * 3.5, v: 0, wait: R() * 3 })); scene.add(drips);
+  const rippleMat = new THREE.MeshBasicMaterial({ color: '#e0a0ff', transparent: true, opacity: 0, blending: THREE.AdditiveBlending, depthWrite: false });
+  const ripples = Array.from({ length: 8 }, () => { const r = new THREE.Mesh(new THREE.RingGeometry(.9, 1, 48), rippleMat.clone()); r.rotation.x = -Math.PI / 2; r.position.y = .02; r.userData.t = 1; scene.add(r); return r; });
+  // electric arcs crackling between the broken ribs
+  const arcMat = new THREE.LineBasicMaterial({ color: '#e6b8ff', transparent: true, opacity: 0, blending: THREE.AdditiveBlending });
+  const arcGeo = new THREE.BufferGeometry(); arcGeo.setAttribute('position', new THREE.BufferAttribute(new Float32Array(24 * 3), 3));
+  const arc = new THREE.Line(arcGeo, arcMat); scene.add(arc);
+  Object.assign(L, { scans, band, holos, drips, dripD, ripples, arcMat, arcGeo, beanKey, rim });
+  bean.position.set(0, 2.25, 0); scene.add(bean);
+
+  Object.assign(L, { ready: true, renderer, scene, camera, strips, key, amb, alarms, tube, glass, cracks, liquid, tubeLight, tubeGlow, puddle, shards, shardD, drops, dropD, bubblesP, steam, motes, sparks, sparkD, sparkSrc, terms, bean, body, face, eyes, mouth, ringL });
+  return true;
+}
+
+/* ---------- Camera: overview, look around, fly to terminals ---------- */
+const cam = { pos: new THREE.Vector3(0, 1.7, 8.5), tPos: new THREE.Vector3(0, 1.9, 8.2), look: new THREE.Vector3(0, 1.8, 0), tLook: new THREE.Vector3(0, 1.8, 0) };
+let active = -1, introMode = true, phase = 'dark', yawOff = 0, tYawOff = 0, pitchOff = 0, tPitchOff = 0;
+const mouse = new THREE.Vector2();
+addEventListener('pointermove', e => { mouse.x = e.clientX / innerWidth * 2 - 1; mouse.y = -(e.clientY / innerHeight * 2 - 1); }, { passive: true });
+const canvas = $('#lab');
+let drag = null;
+canvas.addEventListener('pointerdown', e => { drag = { x: e.clientX, y: e.clientY, yaw: tYawOff, pitch: tPitchOff, moved: 0 }; });
+canvas.addEventListener('pointermove', e => { if (!drag || introMode) return; const dx = e.clientX - drag.x, dy = e.clientY - drag.y; drag.moved = Math.max(drag.moved, Math.hypot(dx, dy)); tYawOff = clamp(drag.yaw - dx * .004, -1.1, 1.1); tPitchOff = clamp(drag.pitch + dy * .002, -.25, .3); });
+addEventListener('pointerup', e => { if (drag && drag.moved < 6 && e.target === canvas) clickLab(e); drag = null; });
+
+function overview(){ const small = innerWidth < 760; cam.tPos.set(small ? .4 : -2.9, small ? 2.6 : 2, small ? 9.6 : 8.6); cam.tLook.set(small ? .4 : -2.9, small ? 1.6 : 1.8, 0); }
+function openFile(i){
+  active = i; tYawOff = 0; tPitchOff = 0;
+  const t = L.terms[i]; const sp = new THREE.Vector3(); t.scr.getWorldPosition(sp);
+  const dir = new THREE.Vector3(-Math.cos(t.ang), 0, -Math.sin(t.ang));
+  const small = innerWidth < 760;
+  const side = new THREE.Vector3(-dir.z, 0, dir.x);
+  cam.tPos.copy(sp).addScaledVector(dir, small ? 3.6 : 3).addScaledVector(side, small ? 0 : -1.1); cam.tPos.y = sp.y + (small ? 1.3 : .35);
+  cam.tLook.copy(sp).addScaledVector(side, small ? 0 : -1.15); cam.tLook.y = sp.y - (small ? .7 : 0);
+  const f = FILES[i];
+  $('#fileId').textContent = `${f.id} / SUBJECT B-0419`;
+  $('#fileT').textContent = f.t;
+  $('#fileP').innerHTML = f.p;
+  const ex = $('#fileExtra'); ex.innerHTML = ''; if (f.tpl){ ex.appendChild($('#' + f.tpl).content.cloneNode(true)); wire(ex); }
+  $('#fileImgs').innerHTML = f.imgs.map(([k, alt, cap, w]) => `<figure${w ? ' class="wide"' : ''}><img src="${IMG[k]}" alt="${alt}"><figcaption>${cap}</figcaption></figure>`).join('');
+  const panel = $('#file'); panel.classList.remove('open'); void panel.offsetWidth; panel.classList.add('open'); panel.scrollTop = 0;
+  $('#hero').classList.add('away'); $('#hint').style.opacity = 0; $('#tags').classList.add('hide');
+}
+function closeFile(){ active = -1; $('#file').classList.remove('open'); overview(); $('#hero').classList.remove('away'); $('#hint').style.opacity = 1; $('#tags').classList.remove('hide'); }
+$('#prevB').addEventListener('click', () => openFile((active - 1 + FILES.length) % FILES.length));
+$('#nextB').addEventListener('click', () => openFile((active + 1) % FILES.length));
+$('#homeB').addEventListener('click', closeFile);
+$('#brand').addEventListener('click', closeFile);
+addEventListener('keydown', e => { if (introMode) return; if (e.key === 'Escape' && active >= 0) closeFile(); if (e.key === 'ArrowRight') openFile((active + 1) % FILES.length); if (e.key === 'ArrowLeft') openFile((active - 1 + FILES.length) % FILES.length); });
+
+const tags = FILES.map((f, i) => {
+  const b = document.createElement('button'); b.className = 'tag';
+  b.innerHTML = `<span class="tag__id">${f.id}</span><span class="tag__t">${f.t}</span>`;
+  b.setAttribute('aria-label', `Open ${f.id}, ${f.t}`);
+  b.addEventListener('click', () => openFile(i));
+  $('#tags').appendChild(b); return b;
+});
+$('#tags').classList.add('hide');
+
+/* clicking: screens open files, the bean reacts */
+const ray = new THREE.Raycaster();
+function clickLab(e){
+  if (!L.ready || introMode) return;
+  ray.setFromCamera(new THREE.Vector2(e.clientX / innerWidth * 2 - 1, -(e.clientY / innerHeight * 2 - 1)), L.camera);
+  if (ray.intersectObjects([L.body]).length){ poke(e.clientX, e.clientY); return; }
+  const hit = ray.intersectObjects(L.terms.map(t => t.scr))[0];
+  if (hit) openFile(hit.object.userData.i);
+}
+const POKES = ['beanos.', 'hm.', '...', 'bean.', 'no.', 'yes.'];
+let pokeN = 0;
+function poke(x, y){
+  if (!hasGSAP) return;
+  const b = L.bean;
+  gsap.timeline()
+    .to(b.scale, { x: 1.25, y: .7, z: 1.25, duration: .12, ease: 'power2.in' })
+    .to(b.scale, { x: .85, y: 1.3, z: .85, duration: .16, ease: 'power2.out' })
+    .to(b.position, { y: '+=1.3', duration: .35, ease: 'power2.out' }, '<')
+    .to(b.rotation, { y: '+=' + Math.PI * 2, duration: .7, ease: 'power3.inOut' }, '<')
+    .to(b.position, { y: '-=1.3', duration: .32, ease: 'power2.in' })
+    .to(b.scale, { x: 1.2, y: .78, z: 1.2, duration: .08 })
+    .to(b.scale, { x: 1, y: 1, z: 1, duration: .8, ease: 'elastic.out(1,.3)' });
+  const p = document.createElement('div'); p.className = 'pop'; p.textContent = POKES[pokeN++ % POKES.length]; p.style.left = x + 'px'; p.style.top = y + 'px'; p.style.fontSize = 'clamp(40px,6vw,90px)'; document.body.appendChild(p);
+  gsap.fromTo(p, { scale: .4, opacity: 1 }, { scale: 1.4, y: -90, opacity: 0, duration: 1.2, ease: 'power2.out', onComplete: () => p.remove() });
+  bubbles(x, y, 10);
+}
+
+/* ---------- Breach effects ---------- */
+function shatter(){
+  const { shards, shardD, drops, dropD } = L;
+  shards.visible = true; L.glass.visible = false; L.cracks.visible = false; if (hasGSAP) gsap.to(L.tubeGlow.material, { opacity: .15, duration: 1.2 });
+  shardD.forEach(d => { const a = Math.random() * 6.283, h = .7 + Math.random() * 3.3; d.p.set(Math.cos(a) * 1.15, h, Math.sin(a) * 1.15); const out = 1.5 + Math.random() * 4; d.v.set(Math.cos(a) * out, 1 + Math.random() * 3, Math.sin(a) * out + (Math.random() < .6 ? 2.5 : 0)); d.r.set(Math.random() * 6, Math.random() * 6, Math.random() * 6); d.vr.set((Math.random() - .5) * 12, (Math.random() - .5) * 12, (Math.random() - .5) * 12); d.live = true; });
+  dropD.forEach(d => { const a = Math.random() * 6.283; d.p.set(Math.cos(a) * 1, .6 + Math.random() * 2.6, Math.sin(a) * 1); const out = 1 + Math.random() * 3.5; d.v.set(Math.cos(a) * out, Math.random() * 2.5, Math.sin(a) * out + 1); });
+  drops.material.opacity = .9;
+}
+
+/* ---------- Render loop ---------- */
+let lastT = 0, blinkT = 2, sparkT = 3;
+function frame(ts){
+  requestAnimationFrame(frame);
+  if (!L.ready) return;
+  const t = ts / 1000, dt = Math.min(.05, (ts - lastT) / 1000 || .016); lastT = ts;
+  const K = r => 1 - Math.pow(1 - r, dt * 60);
+  const { camera, renderer, scene } = L;
+
+  // camera
+  cam.pos.lerp(cam.tPos, K(introMode ? .03 : .045)); cam.look.lerp(cam.tLook, K(introMode ? .03 : .05));
+  yawOff = lerp(yawOff, tYawOff + (active < 0 && !introMode ? mouse.x * -.06 : 0), K(.06)); pitchOff = lerp(pitchOff, tPitchOff + (active < 0 && !introMode ? mouse.y * .03 : 0), K(.06));
+  const rel = cam.pos.clone().sub(cam.look); const r0 = rel.length();
+  const ang = Math.atan2(rel.x, rel.z) + yawOff; const el = Math.asin(clamp(rel.y / r0, -.9, .9)) + pitchOff;
+  camera.position.set(cam.look.x + Math.sin(ang) * Math.cos(el) * r0, cam.look.y + Math.sin(el) * r0, cam.look.z + Math.cos(ang) * Math.cos(el) * r0);
+  if (phase === 'shake') camera.position.add(new THREE.Vector3((Math.random() - .5) * .06, (Math.random() - .5) * .05, 0));
+  camera.lookAt(cam.look);
+  { const small = innerWidth < 760; const tvy = small && !introMode ? (active < 0 ? .24 : .3) : 0; L.voy = lerp(L.voy || 0, tvy, K(.05)); camera.setViewOffset(innerWidth, innerHeight, 0, L.voy * innerHeight, innerWidth, innerHeight); }
+
+  // strip lights: flicker when coming on, steady after
+  L.strips.forEach((s, i) => {
+    const flick = s.on > 0 && s.on < 1 ? (Math.sin(t * 60 + s.seed * 10) > .2 ? 1 : .1) : 1;
+    const lvl = s.on * flick * (Math.random() < .002 ? .3 : 1);
+    s.l.intensity = 1.6 * lvl; s.cone.material.opacity = .055 * lvl; s.fix.material.color.setScalar(lvl);
+  });
+  // alarms
+  L.alarms.forEach((a, i) => { a.tgt.position.set(Math.cos(t * 5 + i * Math.PI) * 6, -6, Math.sin(t * 5 + i * Math.PI) * 6); });
+  // tube + liquid + bubbles
+  const bp = L.bubblesP.geometry.attributes.position; const lvlTop = .55 + L.liquid.scale.y;
+  for (let i = 0; i < bp.count; i++){ let y = bp.getY(i) + dt * (.5 + (i % 7) * .08); if (y > lvlTop) y = .6; bp.setY(i, y); }
+  bp.needsUpdate = true; L.bubblesP.visible = L.liquid.scale.y > .05;
+  L.liquid.position.y = .55 + L.liquid.scale.y / 2;
+  L.tubeLight.intensity = (.7 + L.liquid.scale.y * .7) * (.92 + Math.sin(t * 3) * .08);
+  L.ringL.material.color.setHSL(.78, .9, .55 + Math.sin(t * 2) * .1);
+  // shards & droplets physics
+  if (L.shards.visible){ const m4 = new THREE.Matrix4(), q = new THREE.Quaternion(), s3 = new THREE.Vector3();
+    L.shardD.forEach((d, i) => { if (d.p.y > .04){ d.v.y -= 9.8 * dt; d.p.addScaledVector(d.v, dt); d.r.x += d.vr.x * dt; d.r.y += d.vr.y * dt; d.r.z += d.vr.z * dt; if (d.p.y < .04){ d.p.y = .04; d.v.set(0, 0, 0); d.r.x = Math.PI / 2; } }
+      q.setFromEuler(d.r); s3.setScalar(d.s); m4.compose(d.p, q, s3); L.shards.setMatrixAt(i, m4); });
+    L.shards.instanceMatrix.needsUpdate = true; }
+  if (L.drops.material.opacity > 0){ const a = L.drops.geometry.attributes.position; L.dropD.forEach((d, i) => { if (d.p.y > .02){ d.v.y -= 9.8 * dt; d.p.addScaledVector(d.v, dt); } a.setXYZ(i, d.p.x, Math.max(.02, d.p.y), d.p.z); }); a.needsUpdate = true; L.drops.material.opacity = Math.max(0, L.drops.material.opacity - dt * .25); }
+  // steam rising from the broken tube
+  L.steam.forEach(s => { s.userData.t += dt * .12; if (s.userData.t > 1) s.userData.t -= 1; const k = s.userData.t; s.position.set(s.userData.x * (1 + k), .3 + k * 3.5, s.userData.z * (1 + k)); const sc = 1 + k * 3; s.scale.set(sc, sc, 1); s.material.opacity = L.steamOn ? Math.sin(k * Math.PI) * .5 : 0; });
+  // dust
+  L.motes.rotation.y += dt * .01; L.motes.position.y = Math.sin(t * .2) * .1;
+  // sparks every few seconds
+  sparkT -= dt; if (sparkT < 0 && !introMode){ sparkT = 2 + Math.random() * 5; L.sparkD.forEach(d => { d.p.copy(L.sparkSrc); d.v.set((Math.random() - .5) * 3, Math.random() * 1.5, (Math.random() - .5) * 3 + 1); d.life = .6 + Math.random() * .8; }); }
+  { const a = L.sparks.geometry.attributes.position; L.sparkD.forEach((d, i) => { if (d.life > 0){ d.life -= dt; d.v.y -= 9.8 * dt; d.p.addScaledVector(d.v, dt); } a.setXYZ(i, d.p.x, d.life > 0 ? d.p.y : -50, d.p.z); }); a.needsUpdate = true; }
+
+  // terminals: screens, hover, glow
+  ray.setFromCamera(mouse, camera);
+  const hov = introMode || coarse ? null : ray.intersectObjects(L.terms.map(x => x.scr))[0];
+  L.terms.forEach((x, i) => {
+    x.mat.uniforms.uTime.value = t;
+    const h = (hov && hov.object === x.scr) || active === i ? 1 : 0;
+    x.mat.uniforms.uHover.value = lerp(x.mat.uniforms.uHover.value, h, K(.1));
+    x.gl.material.opacity = x.mat.uniforms.uOn.value * (.35 + x.mat.uniforms.uHover.value * .35);
+    x.pl.intensity = x.mat.uniforms.uOn.value * (.8 + x.mat.uniforms.uHover.value * .8);
+  });
+  canvas.style.cursor = hov ? 'pointer' : (drag ? 'grabbing' : 'grab');
+
+  // BEANOS: bob, squash, look at you (or the file you're reading)
+  const b = L.bean;
+  if (phase === 'free'){
+    b.position.y = lerp(b.position.y, (L.beanBaseY || 1.1) + Math.abs(Math.sin(t * 1.6)) * .05, K(.2));
+    const sq = 1 + Math.sin(t * 3.2) * .025; if (!gsap.isTweening(b.scale)) b.scale.set(1 / Math.sqrt(sq), sq, 1 / Math.sqrt(sq));
+    let lookAt = camera.position.clone();
+    if (active >= 0){ const sp = new THREE.Vector3(); L.terms[active].scr.getWorldPosition(sp); lookAt = sp; }
+    const want = Math.atan2(lookAt.x - b.position.x, lookAt.z - b.position.z);
+    if (!gsap.isTweening(b.rotation)){ let d = want - b.rotation.y; d = Math.atan2(Math.sin(d), Math.cos(d)); b.rotation.y += d * K(.05); }
+    b.rotation.z = Math.sin(t * .8) * .04;
+  } else if (phase === 'float' || phase === 'dark'){
+    b.position.y = 2.25 + Math.sin(t * 1.1) * .08; b.rotation.y = Math.sin(t * .4) * .3; b.rotation.z = Math.sin(t * .7) * .06;
+  }
+  // eyes track the cursor in world space
+  const target = new THREE.Vector3(mouse.x, mouse.y, .5).unproject(camera);
+  target.sub(camera.position).normalize().multiplyScalar(4).add(camera.position); target.lerp(camera.position, .55);
+  L.eyes.forEach(e => { const wp = new THREE.Vector3(); e.pivot.getWorldPosition(wp); const m = new THREE.Matrix4().lookAt(target, wp, new THREE.Vector3(0, 1, 0)); const q = new THREE.Quaternion().setFromRotationMatrix(m); const pq = new THREE.Quaternion(); e.pivot.parent.getWorldQuaternion(pq); q.premultiply(pq.invert()); e.pivot.quaternion.slerp(q, K(.15)); });
+  // blink
+  blinkT -= dt; if (blinkT < 0){ blinkT = 2 + Math.random() * 4; L.eyes.forEach(e => { if (hasGSAP) gsap.timeline().to(e.pivot.scale, { y: .08, duration: .07 }).to(e.pivot.scale, { y: 1, duration: .14 }); }); }
+  if (L.eyesShut) L.eyes.forEach(e => e.pivot.scale.y = .08); else if (L.wasShut){ L.eyes.forEach(e => e.pivot.scale.y = 1); } L.wasShut = L.eyesShut;
+
+  // effects around the bean
+  { const bp = L.bean.position, free = phase === 'free';
+    L.scans.forEach((r, k) => { const y = bp.y + Math.sin(t * 1.6 + k * Math.PI) * 1.05; r.position.set(bp.x, y, bp.z); r.material.opacity = free ? .9 : .4; });
+    L.band.position.set(bp.x, bp.y + Math.sin(t * 1.6) * 1.05, bp.z); L.band.material.opacity = free ? .6 : .3;
+    L.holos.forEach((h, i) => { h.userData.a += dt * .35; const a = h.userData.a; h.position.set(bp.x + Math.cos(a) * 1.55, bp.y + .35 + Math.sin(t * 1.3 + i * 2) * .25, bp.z + Math.sin(a) * 1.55); h.material.opacity = lerp(h.material.opacity, free ? .85 * (.75 + .25 * Math.sin(t * 9 + i)) : 0, K(.05)); });
+    const da = L.drips.geometry.attributes.position;
+    L.dripD.forEach((d, i) => { if (d.wait > 0){ d.wait -= dt; da.setXYZ(i, Math.cos(d.a) * 1.25, 3.92, Math.sin(d.a) * 1.25); return; }
+      d.v += 9.8 * dt; d.y -= d.v * dt;
+      if (d.y < .03){ const rp = L.ripples.find(r => r.userData.t >= 1); if (rp){ rp.userData.t = 0; rp.position.x = Math.cos(d.a) * 1.25; rp.position.z = Math.sin(d.a) * 1.25; } d.y = 3.9; d.v = 0; d.wait = 1 + Math.random() * 3; d.a = Math.random() * 6.283; }
+      da.setXYZ(i, Math.cos(d.a) * 1.25, d.y, Math.sin(d.a) * 1.25); });
+    da.needsUpdate = true; L.drips.visible = !L.glass.visible;
+    L.ripples.forEach(r => { if (r.userData.t < 1){ r.userData.t += dt * .9; const k = r.userData.t; r.scale.setScalar(.05 + k * .45); r.material.opacity = (1 - k) * .8; } else r.material.opacity = 0; });
+    if (free && Math.random() < dt * .7){ const a0 = Math.random() * 6.283, a1 = a0 + 1 + Math.random() * 2; const ap = L.arcGeo.attributes.position; for (let i = 0; i < 24; i++){ const k = i / 23; const a = lerp(a0, a1, k); ap.setXYZ(i, Math.cos(a) * 1.25 + (Math.random() - .5) * .12, 3.7 + Math.sin(k * Math.PI) * -.5 + (Math.random() - .5) * .15, Math.sin(a) * 1.25 + (Math.random() - .5) * .12); } ap.needsUpdate = true; L.arcMat.opacity = 1; }
+    L.arcMat.opacity = Math.max(0, L.arcMat.opacity - dt * 6);
+    L.beanKey.intensity = lerp(L.beanKey.intensity, free ? 1.3 : 0, K(.05));
+    L.rim.material.uniforms.uAmt.value = 1.05 + Math.sin(t * 2.2) * .12;
+  }
+  // project terminal tags
+  if (!introMode){
+    L.terms.forEach((x, i) => {
+      const wp = new THREE.Vector3(); x.mon.getWorldPosition(wp); wp.y += 1.05;
+      const v = wp.project(camera);
+      const vis = v.z < 1 && Math.abs(v.x) < 1.05 && Math.abs(v.y) < 1.05 && i !== active;
+      tags[i].style.transform = `translate(${(v.x * .5 + .5) * innerWidth - 40}px,${(-v.y * .5 + .5) * innerHeight - 40}px)`;
+      tags[i].style.visibility = vis ? 'visible' : 'hidden';
+    });
+  }
+  renderer.render(scene, camera);
+}
+
+/* ---------- Intro: the lights come on, he wakes up, the tube breaks ---------- */
+function logLine(txt, cls){ const d = document.createElement('div'); if (cls) d.className = cls; $('#log').appendChild(d); let i = 0; (function step(){ d.textContent = txt.slice(0, ++i); if (i < txt.length) setTimeout(step, 18); })(); }
+function startIntro(){
+  const ok = build();
+  requestAnimationFrame(frame);
+  if (!ok){ $('#intro').remove(); $('#skip').remove(); introMode = false; reveal(); return; }
+  L.eyesShut = true;
+  cam.pos.set(0, 2.3, 4.2); cam.tPos.set(0, 2.3, 4.6); cam.look.set(0, 2.25, 0); cam.tLook.set(0, 2.25, 0);
+  if (!hasGSAP || reduce){ endIntro(true); return; }
+  const tl = gsap.timeline({ onComplete: () => endIntro(false) }); L.introTl = tl;
+  tl.add(() => logLine('> SECTOR 7 // CONTAINMENT LOG'), .2)
+    .add(() => logLine('> SUBJECT B-0419 "BEANOS"'), .7)
+    .add(() => logLine('> STATUS: DORMANT'), 1.2)
+    .to('#introBlack', { opacity: 0, duration: 1.6, ease: 'power2.inOut' }, 1.1);
+  L.strips.forEach((s, i) => tl.to(s, { on: 1, duration: .5, ease: 'steps(4)' }, 1.3 + i * .35));
+  tl.to(L.key, { intensity: 2.2, duration: 1 }, 2.4)
+    .add(() => { L.terms.forEach((x, i) => gsap.to(x.mat.uniforms.uOn, { value: 1, duration: .4, delay: i * .12, ease: 'steps(3)' })); }, 2.6)
+    .add(() => { L.eyesShut = false; logLine('> STATUS: AWAKE', 'r'); }, 3.4)
+    .to(cam.tPos, { z: 7.2, y: 2.1, duration: 3, ease: 'power2.inOut' }, 3.3)
+    .add(() => { phase = 'shake'; logLine('> WARNING: PRESSURE RISING', 'r'); L.alarms.forEach(a => { a.sp.intensity = 6; a.gl.material.opacity = .9; a.dome.material.color.set('#ff2d3d'); }); }, 4.0)
+    .to('#redwash', { opacity: 1, duration: .25, repeat: 7, yoyo: true }, 4.0)
+    .to(L.cracks.material, { opacity: .5, duration: .15 }, 4.5)
+    .to(L.cracks.material, { opacity: .95, duration: .15 }, 5.0)
+    .fromTo('#breach', { opacity: 0, scale: 1.2 }, { opacity: 1, scale: 1, duration: .3, ease: 'expo.out' }, 5.1)
+    .add(() => { shatter(); L.steamOn = true; }, 5.5)
+    .to(L.liquid.scale, { y: .02, duration: .9, ease: 'power2.in' }, 5.5)
+    .to(L.puddle.scale, { x: 3.4, y: 3.4, z: 3.4, duration: 1.6, ease: 'power2.out' }, 5.6)
+    .to('#breach', { opacity: 0, duration: .4 }, 6.2)
+    .add(() => { phase = 'fall'; }, 5.6)
+    .to(L.bean.position, { y: 1.24, duration: .5, ease: 'power2.in' }, 5.75)
+    .to(L.bean.scale, { x: 1.3, y: .65, z: 1.3, duration: .1 }, 6.25)
+    .to(L.bean.scale, { x: 1, y: 1, z: 1, duration: .9, ease: 'elastic.out(1,.3)' }, 6.35)
+    .add(() => { phase = 'free'; L.beanBaseY = 1.24; }, 6.4)
+    .add(() => { L.alarms.forEach(a => { gsap.to(a.sp, { intensity: 1.2, duration: 1 }); gsap.to(a.gl.material, { opacity: .35, duration: 1 }); }); }, 6.8)
+    .add(() => { overview(); }, 6.9);
+}
+function endIntro(instant){
+  if (!introMode) return;
+  if (L.introTl) L.introTl.kill();
+  introMode = false; phase = 'free';
+  if (L.ready){
+    L.eyesShut = false; L.beanBaseY = 1.24;
+    L.strips.forEach(s => s.on = 1); L.key.intensity = 2.2;
+    L.terms.forEach(x => x.mat.uniforms.uOn.value = 1);
+    if (L.glass.visible) shatter(); L.steamOn = true;
+    L.liquid.scale.y = .02; L.puddle.scale.setScalar(3.4); L.bean.position.y = 1.24; L.bean.scale.set(1, 1, 1);
+    L.alarms.forEach(a => { a.sp.intensity = 1.2; a.gl.material.opacity = .35; a.dome.material.color.set('#ff2d3d'); });
+    overview();
+  }
+  if (hasGSAP){ gsap.to('#redwash', { opacity: 0, duration: .4 }); gsap.to('#intro, #skip', { opacity: 0, duration: instant ? .3 : .6, onComplete: () => { $('#intro').remove(); $('#skip').remove(); } }); }
+  else { $('#intro').remove(); $('#skip').remove(); }
+  reveal();
+}
+function reveal(){
+  $('#tags').classList.remove('hide');
+  if (!hasGSAP || reduce){ $('#bar').style.opacity = 1; $('#hint').style.opacity = 1; return; }
+  gsap.timeline()
+    .fromTo('#title .ch', { opacity: 0, y: 80, rotateX: -80 }, { opacity: 1, y: 0, rotateX: 0, duration: 1.1, stagger: .06, ease: 'expo.out' }, .1)
+    .fromTo('.hero__k, .hero__lede, .hero__acts, .kym', { opacity: 0, y: 24 }, { opacity: 1, y: 0, duration: .9, stagger: .08, ease: 'expo.out' }, .35)
+    .to('#bar', { opacity: 1, duration: .8 }, .6)
+    .to('#hint', { opacity: 1, duration: .8 }, 1)
+    .fromTo('.tag', { opacity: 0, x: -20 }, { opacity: 1, x: 0, duration: .6, stagger: .07, ease: 'expo.out', clearProps: 'x,opacity' }, .8);
+  // status readout glitches now and then
+  const st = $('#status'); const S = ['ESCAPED', 'AT LARGE', 'UNBOTHERED', 'ESCAPED'];
+  let k = 0; setInterval(() => { st.textContent = S[++k % S.length]; }, 3200);
+}
+$('#skip').addEventListener('click', () => endIntro(true));
+addEventListener('keydown', e => { if (introMode && (e.key === 'Escape' || e.key === 'Enter' || e.key === ' ')) endIntro(true); });
+addEventListener('resize', () => { if (!L.ready) return; L.renderer.setSize(innerWidth, innerHeight, false); L.camera.aspect = innerWidth / innerHeight; L.camera.fov = innerWidth < 760 ? 62 : 45; L.camera.updateProjectionMatrix(); if (active < 0 && !introMode) overview(); });
+startIntro();
+</script>
+</body>
+</html>
